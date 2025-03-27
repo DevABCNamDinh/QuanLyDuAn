@@ -171,9 +171,18 @@ namespace QuanLyDuAn.Controllers
                     var userLogin = await _context.users.FirstOrDefaultAsync(x => x.Email == user.Email && x.Password == user.Password);
                     if (userLogin != null)
                     {
+                        HttpContext.Session.SetString("UserId", userLogin.Id.ToString());
+                        HttpContext.Session.SetString("UserName", userLogin.FullName.ToString());
+                        TempData["Message"] = "Đăng nhập thành công";
                         return RedirectToAction("Index");
                     }
-                    return View(user);
+                    else
+                    {
+                        TempData["Message"] = "Thông tin đăng nhập sai!";
+
+                        return View(user);
+                    }
+                        
 
                 }
                 return View();
@@ -205,6 +214,8 @@ namespace QuanLyDuAn.Controllers
                     userRegister.Phone = user.Phone;
                     _context.users.Add(userRegister);
                     await _context.SaveChangesAsync();
+                    TempData["Message"] = "Đăng ký thành công";
+
                     return RedirectToAction("Login");
                 }
                 return View(user);
@@ -214,7 +225,15 @@ namespace QuanLyDuAn.Controllers
 
                 throw;
             }
-            return View();
+           
+        }
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserId");
+            HttpContext.Session.Remove("UserName");
+            TempData["Message"] = "Đăng xuất thành công";
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }
