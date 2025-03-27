@@ -12,6 +12,7 @@ namespace QuanLyDuAn.Models.DTO
         [Required(ErrorMessage = "Mật khẩu không được để trống")]
         [MaxLength(255)]
         public string Password { get; set; }
+        [Required(ErrorMessage = "Xác nhận mật khẩu không được để trống")]
         [Compare("Password",ErrorMessage = "Mật khẩu và xác nhận mật khẩu không khớp")]
         public string ConfirmPassword { get; set; }
 
