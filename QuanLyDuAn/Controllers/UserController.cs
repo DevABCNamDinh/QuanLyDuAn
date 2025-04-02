@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using QuanLyDuAn.Models;
 using   QuanLyDuAn.Models.ViewModels;
 using QuanLyDuAn.Service;
@@ -8,9 +10,11 @@ namespace QuanLyDuAn.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        private readonly IJwtService _jwtService;
+        public UserController(IUserService userService, IJwtService jwtService)
         {
             _userService = userService;
+            _jwtService = jwtService;
         }
         public IActionResult Index()
         {
@@ -29,6 +33,10 @@ namespace QuanLyDuAn.Controllers
             {
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
                 HttpContext.Session.SetString("UserName", user.Username.ToString());
+                var token = _jwtService.GenerateToken(loginViewModel.Username, "Admin");
+
+                // Lưu Token vào Session
+                HttpContext.Session.SetString("AuthToken", token);
                 return RedirectToAction("Index", "Book");
             }
             else
@@ -63,11 +71,13 @@ namespace QuanLyDuAn.Controllers
             }
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
             HttpContext.Session.Remove("UserId");
             HttpContext.Session.Remove("UserName");
-            return RedirectToAction("Index", "Home");
+            HttpContext.Session.Remove("AuthToken");
+            //await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Book");
         }
 
     }

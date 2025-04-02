@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QuanLyDuAn.Service;
 
 namespace QuanLyDuAn.Controllers
@@ -20,13 +21,14 @@ namespace QuanLyDuAn.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult AddToCart(Guid bookId, int quantity)
         {
             var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
-            {
-                return RedirectToAction("Login", "User");
-            }
+            //if (string.IsNullOrEmpty(userId))
+            //{
+            //    return RedirectToAction("Login", "User");
+            //}
             try
             {
                 _cartService.AddToCart(Guid.Parse(userId), bookId, quantity);
