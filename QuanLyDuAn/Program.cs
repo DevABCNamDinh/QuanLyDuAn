@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using QuanLyDuAn.AppDBContext;
 using QuanLyDuAn.Middlewares;
 using QuanLyDuAn.Repository;
 using QuanLyDuAn.Service;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,12 +31,29 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddSingleton<IJwtService, JwtService>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        options.LoginPath = "/User/Login";  // Đường dẫn đăng nhập
-        options.AccessDeniedPath = "/User/Login"; // Khi không có quyền, chuyển hướng đến trang login
+        // Lấy các giá trị từ appsettings.json trực tiếp
+        var secretKey = builder.Configuration["JwtSettings:SecretKey"];
+        var expiresInMinutes = int.Parse(builder.Configuration["JwtSettings:ExpiresInMinutes"]);
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,  // Không kiểm tra Issuer, nếu bạn cần có thể bật lên
+            ValidateAudience = false,  // Không kiểm tra Audience, nếu bạn cần có thể bật lên
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero  // Không có độ trễ khi kiểm tra thời gian
+        };
     });
+
+//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//    .AddCookie(options =>
+//    {
+//        options.LoginPath = "/User/Login";  // Đường dẫn đăng nhập
+//        options.AccessDeniedPath = "/User/Login"; // Khi không có quyền, chuyển hướng đến trang login
+//    });
 
 var app = builder.Build();
 

@@ -16,7 +16,7 @@ namespace QuanLyDuAn.Middlewares
             await _next(context);
 
             // Kiểm tra nếu lỗi 403 (Không có quyền)
-            if (context.Response.StatusCode == 403|| context.Response.StatusCode == 302)
+            if (context.Response.StatusCode == 403|| context.Response.StatusCode == 401)
             {
                 // Nếu là yêu cầu Ajax, trả về JSON thay vì chuyển hướng
                 if (context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
@@ -28,7 +28,7 @@ namespace QuanLyDuAn.Middlewares
                 {
                    
                     // Nếu không phải Ajax, chuyển hướng đến trang thông báo
-                    context.Response.Redirect("/User/Register");
+                    context.Response.Redirect("/User/Login");
                 }
             }
         }
