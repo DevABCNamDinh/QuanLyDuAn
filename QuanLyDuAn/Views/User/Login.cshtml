@@ -1,0 +1,94 @@
+﻿@{
+    Layout = null;
+}
+@using QuanLyDuAn.Models.ViewModels
+@model LoginViewModel
+
+@using QuanLyDuAn.Service
+@inject IHttpContextAccessor HttpContextAccessor
+@inject ICartService _cartService
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - QuanLyDuAn</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/QuanLyDuAn.styles.css" asp-append-version="true" />
+    <style>
+        .gradient-custom {
+            /* fallback for old browsers */
+            background: #6a11cb;
+            /* Chrome 10-25, Safari 5.1-6 */
+            background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+            /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+            background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
+        }
+    </style>
+</head>
+<body>
+
+    <section class="vh-100 gradient-custom">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                    <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                        <div class="card-body p-5 text-center">
+                            <div class="mb-md-5 mt-md-4 pb-5">
+                                <h2 class="fw-bold mb-2 text-uppercase">Đăng nhập</h2>
+                                <form asp-action="Login" method="post">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="form-outline form-white mb-4 text-start">
+                                        <label asp-for="Username" class="control-label">Tài khoản</label>
+                                        <input asp-for="Username" class="form-control" />
+                                        <span asp-validation-for="Username" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-outline form-white mb-4 text-start">
+                                        <label asp-for="Password" class="control-label ">Mật khẩu</label>
+                                        <input asp-for="Password" class="form-control" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="form-outline form-white mb-4">
+                                        <input type="submit" value="Đăng nhập" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                            <div>
+                                <p class="mb-0">
+                                    Đăng ký?
+                                    <a asp-action="Register" asp-asp-controller="User" class="text-white-50 fw-bold">Đăng ký</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>
+@if (TempData["Message"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            var message = "@TempData["Message"]";
+            // Hiển thị thông báo thành công ở góc trên bên phải
+            var alertBox = $('<div class="alert alert-success position-fixed top-0 end-0 m-5" role="alert">' + message + '</div>');
+            $('body').append(alertBox);
+
+            // Tự động ẩn thông báo sau 1,5 giây
+            setTimeout(function () {
+                alertBox.fadeOut();
+            }, 1500);
+        });
+    </script>
+}
+@if (ViewBag.Error != null)
+{
+    <span class="text-danger">@ViewBag.Error</span>
+}

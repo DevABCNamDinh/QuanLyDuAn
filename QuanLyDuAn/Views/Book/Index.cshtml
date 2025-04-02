@@ -1,0 +1,18 @@
+﻿@model List<Book>
+
+<div class="row">
+    @foreach (var book in Model)
+    {
+        <div class="col-md-3 col-sm-4 mb-4">
+            <div class="card h-100">
+                <img class="card-img-top" src="@book.ImagePath" alt="@book.Title" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text"><strong>Tác giả:</strong> @book.Author</p>
+                    <p class="card-text"><strong>Giá:</strong> @book.Price.ToString("N0") đ</p>
+                    @Html.ActionLink("Xem chi tiết", "Details", new { id = book.Id }, new { @class = "btn btn-primary" })
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace QuanLyDuAn.Models
+namespace QuanLyDuAn.Models.ViewModels
 {
-    public class User
+    public class RegisterViewModel
     {
-        [Key]
-        public Guid Id { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -15,6 +13,8 @@ namespace QuanLyDuAn.Models
         [StringLength(50)]
         public string Password { get; set; }
 
-        public Cart Cart { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string ConfirmPassword { get; set; }
     }
 }

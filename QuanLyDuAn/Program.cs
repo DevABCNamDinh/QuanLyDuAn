@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using QuanLyDuAn.AppDBContext;
+using QuanLyDuAn.Repository;
+using QuanLyDuAn.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,11 @@ builder.Services.AddDbContext<MyDBContext>(options =>
 });
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<ICartService, CartService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,6 +38,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Book}/{action=Index}/{id?}");
 
 app.Run();
