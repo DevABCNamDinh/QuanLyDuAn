@@ -19,6 +19,12 @@ namespace QuanLyDuAn.AppDBContext
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Data Source=DESKTOP-6F71DIH\\SQLEXPRESS;Initial Catalog=QLDuAn;Integrated Security=True;TrustServerCertificate=true");
+
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()

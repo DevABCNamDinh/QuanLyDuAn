@@ -71,6 +71,7 @@ namespace QuanLyDuAn.Controllers
             }
         }
 
+
         public async Task<IActionResult> Logout()
         {
             HttpContext.Session.Remove("UserId");

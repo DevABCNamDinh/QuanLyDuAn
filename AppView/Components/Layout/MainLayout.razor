@@ -1,0 +1,73 @@
+﻿@using QuanLyDuAn.Service
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject ICartService _cartService
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+
+        <div class="top-row px-4">
+            @if (!string.IsNullOrEmpty(userId))
+            {
+                <li class="nav-item">
+                    <a href="/cart">
+                        <span class="nav-link navbar-text">Giỏ hàng (@cartItemCount)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link navbar-text">Xin chào, @userName</span>
+                </li>
+                <li class="nav-item">
+                    <button class="btn btn-danger" @onclick="Logout">Đăng xuất</button>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a class="btn btn-warning text-white rounded-pill" href="/login">Đăng nhập/Đăng ký</a>
+                </li>
+            }
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+@code
+{
+    private string userId;
+    private string userName;
+    private int cartItemCount = 0;
+
+    protected override void OnInitialized()
+    {
+        userId = HttpContextAccessor.HttpContext.Session.GetString("UserId");
+        userName = HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Khách";
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var cart = _cartService.GetCartFromUserId(Guid.Parse(userId));
+            var cartItems = _cartService.GetCartItems(cart.Id);
+            cartItemCount = cartItems.Sum(i => i.Quantity);
+        }
+        StateHasChanged();
+    }
+
+    private void Logout()
+    {
+        HttpContextAccessor.HttpContext?.Session.Clear();
+        Navigation.NavigateTo("/login");
+    }
+}

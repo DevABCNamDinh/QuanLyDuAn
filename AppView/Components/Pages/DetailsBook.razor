@@ -1,0 +1,87 @@
+﻿@page "/books/{id}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<h3>Chi tiết Sách</h3>
+
+@if (book == null)
+{
+    <p>Đang tải dữ liệu...</p>
+}
+else
+{
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card">
+                    <img src="@book.ImagePath" class="card-img-top" alt="@book.Title" />
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <h1 class="display-4">@book.Title</h1>
+                <p class="text-muted">by @book.Author</p>
+                <h2 class="text-success">@book.Price.ToString("N0") đ</h2>
+                <p class="lead">@book.Description</p>
+                <p><strong>Số lượng còn lại:</strong> @book.Quantity</p>
+
+                <div class="form-group">
+                    <label for="quantity">Số lượng</label>
+                    <input type="number" class="form-control" id="quantity" @bind="quantity" min="1" max="@book.Quantity" />
+                </div>
+
+                <button class="btn btn-primary btn-lg" @onclick="AddToCart">Thêm vào giỏ hàng</button>
+
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <div class="alert alert-success">@Message</div>
+                }
+                @if (!string.IsNullOrEmpty(Error))
+                {
+                    <div class="alert alert-danger">@Error</div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .card-img-top {
+        max-height: 500px;
+        object-fit: contain;
+    }
+</style>
+
+@code {
+    [Parameter] public string Id { get; set; }
+    private QuanLyDuAn.Models.Book book;
+    private int quantity = 1;
+    private string Message;
+    private string Error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            book = await Http.GetFromJsonAsync<QuanLyDuAn.Models.Book>($"api/books/{Id}");
+        }
+        catch (Exception ex)
+        {
+            Error = "Không thể tải dữ liệu sách.";
+        }
+    }
+
+    private async Task AddToCart()
+    {
+        var response = await Http.PostAsJsonAsync($"api/cart/addtocart", new { bookId = book.Id, quantity });
+
+        if (response.IsSuccessStatusCode)
+        {
+            Message = "Thêm vào giỏ hàng thành công!";
+        }
+        else
+        {
+            Error = "Lỗi khi thêm vào giỏ hàng.";
+        }
+    }
+}

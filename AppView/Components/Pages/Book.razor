@@ -1,0 +1,47 @@
+﻿@page "/books"
+@page "/"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+<h3>Danh sách Sách</h3>
+
+@if (books == null)
+{
+    <p>Đang tải dữ liệu...</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var book in books)
+        {
+            <div class="col-md-3 col-sm-4 mb-4">
+                <div class="card h-100">
+                    <img class="card-img-top" src="@book.ImagePath" alt="@book.Title" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text"><strong>Tác giả:</strong> @book.Author</p>
+                        <p class="card-text"><strong>Giá:</strong> @book.Price.ToString("N0") đ</p>
+                        <button class="btn btn-primary" @onclick="() => ViewDetails(book.Id)">Xem chi tiết</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<QuanLyDuAn.Models.Book> books;
+
+    protected override async Task OnInitializedAsync()
+    {
+       
+        books = await Http.GetFromJsonAsync<List<QuanLyDuAn.Models.Book>>("https://localhost:7237/api/Books");
+
+    }
+
+    private void ViewDetails(Guid id)
+    {
+        Navigation.NavigateTo($"/books/{id}");
+    }
+}
